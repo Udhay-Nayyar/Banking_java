@@ -45,7 +45,7 @@ public class DashboardServlet extends HttpServlet {
 //		System.out.println("the name is " + request.getAttribute("username"));
 		
 		ServletContext sc =  getServletContext();
-		RequestDispatcher rd =  sc.getRequestDispatcher("./dashboard.jsp");
+		RequestDispatcher rd =  sc.getRequestDispatcher("/dashboard.jsp");
 		rd.forward(request, response);
 		
 		
