@@ -1,0 +1,48 @@
+package com.app.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.app.dao.UserDAO;
+
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	public LoginServlet() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	}
+
+	@Override
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		String username = request.getParameter("email");
+		String password = request.getParameter("password");
+
+		UserDAO userDAO = new UserDAO();
+		String result = userDAO.loginIn(username, password);
+
+//		                   Loggend in successfully
+		
+		System.out.println("message " + result);
+		if (result.equals("Loggend in successfully")) {
+			response.sendRedirect("./dashboard.jsp");
+		} else {
+			PrintWriter out = response.getWriter();
+			out.println("Kindly enter the correct details");
+		}
+
+	}
+
+}
