@@ -8,8 +8,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.app.dao.UserDAO;
+import com.app.model.User;
+import com.mysql.cj.Session;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -29,15 +32,14 @@ public class LoginServlet extends HttpServlet {
 
 		String username = request.getParameter("email");
 		String password = request.getParameter("password");
-
 		UserDAO userDAO = new UserDAO();
-		String result = userDAO.loginIn(username, password);
+		User result = userDAO.loginIn(username, password);
 
-//		                   Loggend in successfully
-		
 		System.out.println("message " + result);
-		if (result.equals("Loggend in successfully")) {
-			response.sendRedirect("./dashboard.jsp");
+		if (result != null) {
+			HttpSession session = request.getSession();
+			session.setAttribute("userId", result.getId());
+			response.sendRedirect("./landingpage.jsp");
 		} else {
 			PrintWriter out = response.getWriter();
 			out.println("Kindly enter the correct details");

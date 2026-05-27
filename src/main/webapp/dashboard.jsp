@@ -133,17 +133,17 @@
 
             <div class="card">
                 <h3>Username</h3>
-                <p>Udhay</p>
+                <p><%= request.getAttribute("username") %></p>
             </div>
 
             <div class="card">
                 <h3>Account Number</h3>
-                <p>ACC102938</p>
+                <p><%= request.getAttribute("account_number") %></p>
             </div>
 
             <div class="card">
                 <h3>Balance</h3>
-                <p>₹50,000</p>
+                <p>₹<%= request.getAttribute("balance") %></p>
             </div>
 
         </div>
