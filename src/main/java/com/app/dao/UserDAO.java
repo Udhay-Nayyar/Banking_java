@@ -45,14 +45,14 @@ public class UserDAO {
 
 	}
 
-	public User loginIn( String username, String password) {
+	public User loginIn(String username, String password) {
 
 		Connection con = (new DBConnection()).getConnection();
 
 		String query = "select * from users where email = ? and password = ? ";
 
 		User user = null;
-		
+
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
 
@@ -63,17 +63,17 @@ public class UserDAO {
 
 			if (rs.next() == false) {
 				return null;
-			}
-			else {
-			    user = new User();
+			} else {
+				user = new User();
 				user.setUsername(rs.getString("username"));
 				user.setPassword(rs.getString("password"));
 				user.setId(rs.getInt("id"));
-				
+
 			}
 
 			con.close();
 			ps.close();
+			rs.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -98,18 +98,18 @@ public class UserDAO {
 			String username = rs.getString("username");
 			String email = rs.getString("email");
 			String account_number = rs.getString("account_number");
-			double balance = rs.getDouble("balance"); 
-			
-			
-			
+			double balance = rs.getDouble("balance");
+
 			user = new User();
 			user.setAccount_number(account_number);
 			user.setBalance(balance);
 			user.setEmail(email);
 			user.setUsername(username);
-			
-			
-			
+
+			con.close();
+			ps.close();
+			rs.close();
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,4 +118,24 @@ public class UserDAO {
 		return user;
 	}
 
+	public void updateBalance(Integer id, Double amount) {
+		String query = "UPDATE users  SET balance = ?  WHERE id = ?";
+
+		Connection con = (new DBConnection()).getConnection();
+		try {
+			PreparedStatement ps = con.prepareStatement(query);
+			User user = getUserById(id);
+			ps.setDouble(1, user.getBalance() + amount);
+			ps.setInt(2, id);
+			
+			int result = ps.executeUpdate();
+			
+			con.close();
+			ps.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
