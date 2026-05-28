@@ -35,9 +35,12 @@ public class TopupServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 		Integer id = (Integer) session.getAttribute("userId");
 
-		userDAO.updateBalance(id, amount);
+		userDAO.updateBalance(id, amount , 1);
 
 		response.sendRedirect("./dashboard");
+//		ServletContext sc =  getServletContext();
+//		RequestDispatcher rd =  sc.getRequestDispatcher("/dashboard");
+//		rd.forward(request, response);
 	}
 
 }

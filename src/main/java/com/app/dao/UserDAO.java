@@ -118,14 +118,20 @@ public class UserDAO {
 		return user;
 	}
 
-	public void updateBalance(Integer id, Double amount) {
+	public void updateBalance(Integer id, Double amount , Integer operation) {
 		String query = "UPDATE users  SET balance = ?  WHERE id = ?";
 
 		Connection con = (new DBConnection()).getConnection();
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
 			User user = getUserById(id);
-			ps.setDouble(1, user.getBalance() + amount);
+			
+			if(operation == 1) {
+				ps.setDouble(1, user.getBalance() + amount);				
+			}
+			else {
+				ps.setDouble(1, user.getBalance() - amount);
+			}
 			ps.setInt(2, id);
 			
 			int result = ps.executeUpdate();

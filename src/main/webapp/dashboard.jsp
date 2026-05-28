@@ -156,7 +156,7 @@
                 Topup
             </a>
 
-            <a href="withdraw.jsp" class="action-btn">
+            <a href="withdraw" class="action-btn">
                 Withdraw
             </a>
 
