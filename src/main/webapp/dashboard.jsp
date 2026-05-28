@@ -1,3 +1,10 @@
+
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="com.app.model.Transaction"%>
+
+<%
+ArrayList<Transaction> transactions = (ArrayList<Transaction>) request.getAttribute("transactions");
+%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
@@ -164,33 +171,43 @@
 
 
 
-        <table>
-
-            <tr>
-                <th>Transaction Type</th>
-                <th>Amount</th>
-                <th>Date</th>
-            </tr>
-
-            <tr>
-                <td>TOPUP</td>
-                <td>₹5000</td>
-                <td>2026-05-27</td>
-            </tr>
-
-            <tr>
-                <td>WITHDRAW</td>
-                <td>₹2000</td>
-                <td>2026-05-26</td>
-            </tr>
-
-            <tr>
-                <td>TOPUP</td>
-                <td>₹10000</td>
-                <td>2026-05-25</td>
-            </tr>
-
-        </table>
+	<table>
+	
+	    <tr>
+	        <th>Transaction Type</th>
+	        <th>Amount</th>
+	        <th>Date</th>
+	    </tr>
+	
+	    <%
+	    for(Transaction tx : transactions){
+	    %>
+	
+	    <tr>
+	
+	        <td>
+	            <%= tx.getTransaction_type() %>
+	        </td>
+	
+	        <td>
+	            ₹<%= tx.getAmount() %>
+	        </td>
+	
+	        <td>
+	            <%= tx.getCreated_at() %>
+	        </td>
+	
+	    </tr>
+	
+	    <%
+	    }
+	    %>
+	
+	</table>
+        
+        <a href="withdraw" class="action-btn">
+                History
+            </a>
 
     </div>
 

@@ -1,9 +1,12 @@
 package com.app.controller;
 
 import java.io.IOException;
+
+import com.app.model.Transaction;
 import com.app.model.User;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.app.dao.TransactionDAO;
 import com.app.dao.UserDAO;
 import com.app.util.DBConnection;
 import com.mysql.cj.Session;
@@ -42,11 +46,21 @@ public class DashboardServlet extends HttpServlet {
 		request.setAttribute("email",user.getEmail());
 		
 		
+		//talking to transaction object 
+		TransactionDAO txDAO = new TransactionDAO();
+		ArrayList<Transaction> list =   txDAO.getDefaultTransHistory((Integer)session.getAttribute("userId"));
+		request.setAttribute("transactions", list);
+		
+		
+		
+		
 //		System.out.println("the name is " + request.getAttribute("username"));
 		
 		ServletContext sc =  getServletContext();
 		RequestDispatcher rd =  sc.getRequestDispatcher("/dashboard.jsp");
 		rd.forward(request, response);
+		
+		
 		
 		
 		

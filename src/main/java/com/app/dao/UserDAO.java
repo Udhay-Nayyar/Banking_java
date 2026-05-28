@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import org.apache.catalina.connector.Response;
 
+import com.app.model.Transaction;
 import com.app.model.User;
 import com.app.util.DBConnection;
 
@@ -120,26 +121,40 @@ public class UserDAO {
 
 	public void updateBalance(Integer id, Double amount , Integer operation) {
 		String query = "UPDATE users  SET balance = ?  WHERE id = ?";
-
+		
+		Transaction t = new Transaction();
+		String transQuery = "INSERT INTO transactions(user_id, transaction_type , amount) VALUES (?,?,?)";
 		Connection con = (new DBConnection()).getConnection();
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
-			User user = getUserById(id);
+			User user = getUserById(id);			
+			PreparedStatement txps = con.prepareStatement(transQuery);
+			
+			txps.setInt(1,id);
 			
 			if(operation == 1) {
 				ps.setDouble(1, user.getBalance() + amount);				
+				txps.setString(2, "topup");
 			}
 			else {
 				ps.setDouble(1, user.getBalance() - amount);
+				txps.setString(2, "withdraw");
 			}
 			ps.setInt(2, id);
 			
+			txps.setDouble(3,amount);
+			
+			
+			
+			int txresult  = txps.executeUpdate();
 			int result = ps.executeUpdate();
+					
 			
 			con.close();
 			ps.close();
-			
+			txps.close();
 		} catch (SQLException e) {
+			System.out.println("hlllo");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
