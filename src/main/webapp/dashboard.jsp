@@ -586,7 +586,7 @@ ArrayList<Transaction> transactions = (ArrayList<Transaction>) request.getAttrib
                 Withdraw
             </a>
 
-            <a href="withdraw" class="action-btn action-btn-outline">
+            <a href="history" class="action-btn action-btn-outline">
                 <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 History
             </a>
