@@ -17,8 +17,8 @@ public class UserDAO {
 	public void signUp(User user) {
 		Connection con = (new DBConnection()).getConnection();
 
-		String query = "INSERT INTO users (username, email , password , balance ,account_number)\r\n"
-				+ "VALUES (?,?,?,?,?);";
+		String query = "INSERT INTO users (username, email , password , balance )\r\n"
+				+ "VALUES (?,?,?,?);";
 
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
@@ -26,19 +26,35 @@ public class UserDAO {
 			ps.setString(2, user.getEmail());
 			ps.setString(3, user.getPassword());
 			ps.setDouble(4, user.getBalance());
-			ps.setString(5, user.getAccount_number());
 
 			int noOfRowsEffected = ps.executeUpdate();
-
+			
+			String email = user.getEmail();
+			String findId = "Select id from users where email = ?";
+			
+			PreparedStatement getps = con.prepareStatement(findId);
+			getps.setString(1,email);
+			
+			ResultSet rs = getps.executeQuery();
+			rs.next();
+			
+			Integer userID = rs.getInt("id");
+			String account_number = "IOI2410100" + userID;
+			
+			String addingAccNoQuery = "UPDATE users  SET account_number = ?  WHERE id = ?";
+			
+			PreparedStatement setAccNo = con.prepareStatement(addingAccNoQuery);
+			setAccNo.setString(1,account_number);
+			setAccNo.setInt(2,userID);
+			
+			Integer res = setAccNo.executeUpdate();
+			
+			setAccNo.close();
+			rs.close();
+			getps.close();
 			ps.close();
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
 			con.close();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

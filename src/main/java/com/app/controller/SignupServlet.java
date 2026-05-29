@@ -32,11 +32,11 @@ public class SignupServlet extends HttpServlet {
 		String email =  request.getParameter("email");
 		String password = request.getParameter("password");
 		Double balance = Double.parseDouble(request.getParameter("balance"));
-		String account_number = request.getParameter("account_number");
-
+		
+		
+		
 		User user = new User();
 		user.setUsername(username);
-		user.setAccount_number(account_number);
 		user.setBalance(balance);
 		user.setEmail(email);
 		user.setPassword(password);

@@ -355,18 +355,13 @@
                             step="0.01"
                             placeholder="0.00"
                             required
+                            min = "1"
+                            max  = "100000"
                         >
                     </div>
 
-                    <div class="input-group">
-                        <label for="account_number">Account Number</label>
-                        <input
-                            type="text"
-                            id="account_number"
-                            name="account_number"
-                            placeholder="e.g. 1234567890"
-                            required
-                        >
+                    <div class="input-group" style="font-size: 15px;  margin-top : 20px;">
+                        Account number will be provided after sign up 
                     </div>
                 </div>
 
