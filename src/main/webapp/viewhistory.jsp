@@ -588,20 +588,22 @@ table tbody tr:last-child td {
 		int debitCount = 0;
 
 		if (transactions != null) {
+
 			totalCount = transactions.size();
 
 			for (Transaction tx : transactions) {
 
-				String t = tx.getTransaction_type();
+				String type = tx.getTransaction_type();
+				String typeLower = (type != null) ? type.toLowerCase() : "";
 
-				if (t != null) {
+				if (typeLower.equals("topup") || typeLower.equals("received")) {
 
-			if (t.equalsIgnoreCase("topup")) {
-				creditCount++;
-			} else if (t.equalsIgnoreCase("withdraw")) {
-				debitCount++;
-			}
+			creditCount++;
+				}
 
+				else if (typeLower.equals("withdraw") || typeLower.equals("send")) {
+
+			debitCount++;
 				}
 			}
 		}
@@ -686,33 +688,49 @@ table tbody tr:last-child td {
 						String type = tx.getTransaction_type();
 						String typeLower = (type != null) ? type.toLowerCase() : "";
 
-						String badgeClass = typeLower.contains("topup")
+						String badgeClass = typeLower.equals("topup") || typeLower.equals("received")
 						? "deposit"
-						: typeLower.contains("withdraw") ? "withdraw" : "default";
+						: typeLower.equals("withdraw") || typeLower.equals("send") ? "withdraw" : "default";
+
+						String displayType = "";
+
+						if (typeLower.equals("topup")) {
+							displayType = "TOPUP";
+						} else if (typeLower.equals("withdraw")) {
+							displayType = "WITHDRAW";
+						} else if (typeLower.equals("send")) {
+							displayType = "TRANSFER SENT";
+						} else if (typeLower.equals("received")) {
+							displayType = "TRANSFER RECEIVED";
+						}
 					%>
 
 					<tr data-type="<%=badgeClass%>">
 
 						<td><span class="tx-badge <%=badgeClass%>"> <%
  if (badgeClass.equals("deposit")) {
- %> <svg viewBox="0 0 24 24">
-                            <line x1="12" y1="19" x2="12" y2="5" />
-                            <polyline points="5 12 12 5 19 12" />
-                        </svg> <%
+ %>
+
+								<svg viewBox="0 0 24 24">
+                <line x1="12" y1="19" x2="12" y2="5" />
+                <polyline points="5 12 12 5 19 12" />
+            </svg> <%
  } else if (badgeClass.equals("withdraw")) {
- %> <svg viewBox="0 0 24 24">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <polyline points="19 12 12 19 5 12" />
-                        </svg> <%
+ %> <svg
+									viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <polyline points="19 12 12 19 5 12" />
+            </svg> <%
  }
- %> <%=tx.getTransaction_type().toUpperCase()%>
+ %> <%=displayType%>
 
 						</span></td>
 
 						<td>
 							<%
 							if (badgeClass.equals("deposit")) {
-							%> <span class="tx-amount deposit"> +₹<%=tx.getAmount()%>
+							%> <span
+							class="tx-amount deposit"> +₹<%=tx.getAmount()%>
 						</span> <%
  } else {
  %> <span class="tx-amount withdraw"> -₹<%=tx.getAmount()%>
