@@ -30,10 +30,10 @@ public class LoginServlet extends HttpServlet {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String username = request.getParameter("email");
+		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		UserDAO userDAO = new UserDAO();
-		User result = userDAO.loginIn(username, password);
+		User result = userDAO.loginIn(email, password);
 
 		System.out.println("message " + result);
 		if (result != null) {

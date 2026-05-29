@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.catalina.connector.Response;
+import org.mindrot.jbcrypt.BCrypt;
 
 import com.app.model.Transaction;
 import com.app.model.User;
@@ -19,11 +20,12 @@ public class UserDAO {
 
 		String query = "INSERT INTO users (username, email , password , balance )\r\n" + "VALUES (?,?,?,?);";
 
+		String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
 			ps.setString(1, user.getUsername());
 			ps.setString(2, user.getEmail());
-			ps.setString(3, user.getPassword());
+			ps.setString(3, hashedPassword);
 			ps.setDouble(4, user.getBalance());
 
 			int noOfRowsEffected = ps.executeUpdate();
@@ -61,39 +63,37 @@ public class UserDAO {
 
 	}
 
-	public User loginIn(String username, String password) {
+	public User loginIn(String email, String password) {
 
 		Connection con = (new DBConnection()).getConnection();
 
-		String query = "select * from users where email = ? and password = ? ";
+		String query = "select * from users where email = ?";
 
 		User user = null;
 
-		try {
-			PreparedStatement ps = con.prepareStatement(query);
+			try {
+				PreparedStatement ps = con.prepareStatement(query);
+				ps.setString(1, email);
 
-			ps.setString(1, username);
-			ps.setString(2, password);
+				ResultSet rs = ps.executeQuery();
 
-			ResultSet rs = ps.executeQuery();
+				if (rs.next() == false) {
+					return null;
+				} else {
+					user = new User();
+					user.setUsername(rs.getString("username"));
+					user.setPassword(rs.getString("password"));
+					user.setId(rs.getInt("id"));
+					if (BCrypt.checkpw(password, user.getPassword()) == false) return null;
+				}
 
-			if (rs.next() == false) {
-				return null;
-			} else {
-				user = new User();
-				user.setUsername(rs.getString("username"));
-				user.setPassword(rs.getString("password"));
-				user.setId(rs.getInt("id"));
-
+				con.close();
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
-			con.close();
-			ps.close();
-			rs.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return user;
 
 	}
