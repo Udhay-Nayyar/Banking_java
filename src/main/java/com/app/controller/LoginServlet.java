@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import com.app.dao.UserDAO;
 import com.app.model.User;
-import com.mysql.cj.Session;
+
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {

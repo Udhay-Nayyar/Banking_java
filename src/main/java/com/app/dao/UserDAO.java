@@ -71,29 +71,31 @@ public class UserDAO {
 
 		User user = null;
 
-			try {
-				PreparedStatement ps = con.prepareStatement(query);
-				ps.setString(1, email);
+		try {
+			PreparedStatement ps = con.prepareStatement(query);
+			ps.setString(1, email);
 
-				ResultSet rs = ps.executeQuery();
+			ResultSet rs = ps.executeQuery();
 
-				if (rs.next() == false) {
+			if (rs.next() == false) {
+				return null;
+			} else {
+				user = new User();
+				user.setUsername(rs.getString("username"));
+				user.setPassword(rs.getString("password"));
+				user.setId(rs.getInt("id"));
+				if (BCrypt.checkpw(password, user.getPassword()) == false)
 					return null;
-				} else {
-					user = new User();
-					user.setUsername(rs.getString("username"));
-					user.setPassword(rs.getString("password"));
-					user.setId(rs.getInt("id"));
-					if (BCrypt.checkpw(password, user.getPassword()) == false) return null;
-				}
-
-				con.close();
-				ps.close();
-				rs.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+
+			con.close();
+			ps.close();
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("betii chod");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return user;
 
 	}
@@ -138,7 +140,7 @@ public class UserDAO {
 
 	public void updateBalance(Integer id, Double amount, Integer operation) {
 		String query = "UPDATE users  SET balance = ?  WHERE id = ?";
-		
+
 		String transQuery = "INSERT INTO transactions(user_id, transaction_type , amount) VALUES (?,?,?)";
 		Connection con = (new DBConnection()).getConnection();
 		try {
@@ -158,7 +160,7 @@ public class UserDAO {
 			ps.setInt(2, id);
 
 			txps.setDouble(3, amount);
-			
+
 			int txresult = txps.executeUpdate();
 			int result = ps.executeUpdate();
 			con.close();
@@ -210,9 +212,8 @@ public class UserDAO {
 		return user;
 	}
 
-	public void addTransaction(User user, Double amount, boolean who) {
+	public void addTransaction(User user, Double amount, boolean who, Connection con) {
 		String query = "INSERT INTO transactions(user_id, transaction_type , amount) VALUES (?,?,?)";
-		Connection con = (new DBConnection()).getConnection();
 
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
@@ -227,8 +228,14 @@ public class UserDAO {
 			ps.setDouble(3, amount);
 
 			Integer res = ps.executeUpdate();
-
+			con.commit();
 		} catch (SQLException sq) {
+			try {
+				con.rollback();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			System.out.println("error while inserting");
 		}
 
