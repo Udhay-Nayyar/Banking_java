@@ -49,16 +49,18 @@ public class TransferServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		System.out.println("post mein agya");
 		Connection con = (new DBConnection()).getConnection();
 		Double amount = Double.parseDouble(request.getParameter("amount"));
-
+		
+		
 		// get the money from the user account and send it to other user account
 
 		HttpSession session = request.getSession(false);
 		UserDAO userDAO = new UserDAO();
 		User sender = userDAO.getUserById((Integer) session.getAttribute("userId"));
 
+		
+		
 		String senders_account_number = sender.getAccount_number();
 		String receviers_account_number = request.getParameter("to_account");
 		User receiver = userDAO.getUserByAccNumber(receviers_account_number);
@@ -101,6 +103,8 @@ public class TransferServlet extends HttpServlet {
 			Integer sResult = senderUpdate.executeUpdate();
 			Integer rResult = receiverUpdate.executeUpdate();
 			
+		
+			
 			userDAO.addTransaction(sender, amount, true);
 			userDAO.addTransaction(receiver, amount, false);
 
@@ -111,6 +115,7 @@ public class TransferServlet extends HttpServlet {
 			response.sendRedirect("./dashboard");
 		} catch (SQLException e) {
 			// TODO: handle exception
+			
 			System.out.println("error in transfer servlet");
 
 		}

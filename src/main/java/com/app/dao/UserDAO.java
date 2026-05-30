@@ -138,8 +138,7 @@ public class UserDAO {
 
 	public void updateBalance(Integer id, Double amount, Integer operation) {
 		String query = "UPDATE users  SET balance = ?  WHERE id = ?";
-
-		Transaction t = new Transaction();
+		
 		String transQuery = "INSERT INTO transactions(user_id, transaction_type , amount) VALUES (?,?,?)";
 		Connection con = (new DBConnection()).getConnection();
 		try {
@@ -159,10 +158,9 @@ public class UserDAO {
 			ps.setInt(2, id);
 
 			txps.setDouble(3, amount);
-
+			
 			int txresult = txps.executeUpdate();
 			int result = ps.executeUpdate();
-
 			con.close();
 			ps.close();
 			txps.close();

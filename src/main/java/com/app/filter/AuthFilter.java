@@ -10,54 +10,40 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-/**
- * Servlet Filter implementation class AuthFilter
- */
-@WebFilter(
-		dispatcherTypes = {DispatcherType.INCLUDE }
-					, 
-		urlPatterns = { 
-				"/login", 
-				"/signup", 
-				"/logout", 
-				"/topup", 
-				"/withdraw", 
-				"/dashboard"
-		})
+@WebFilter({ "/dashboard", "/withdraw", "/transfer", "/history" })
 public class AuthFilter extends HttpFilter implements Filter {
-       
-    /**
-     * @see HttpFilter#HttpFilter()
-     */
-    public AuthFilter() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
-	/**
-	 * @see Filter#destroy()
-	 */
+	public AuthFilter() {
+
+	}
+
 	public void destroy() {
 		// TODO Auto-generated method stub
 	}
 
-	/**
-	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		// place your code here
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 
-		// pass the request along the filter chain
+		HttpServletRequest req = (HttpServletRequest) request;
+
+		HttpServletResponse resp = (HttpServletResponse) response;
+
+		HttpSession session = req.getSession(false);
+
+		if (session == null || session.getAttribute("userId") == null) {
+
+			resp.sendRedirect("login.jsp");
+			return;
+		}
 		chain.doFilter(request, response);
 	}
 
-	/**
-	 * @see Filter#init(FilterConfig)
-	 */
 	public void init(FilterConfig fConfig) throws ServletException {
-		// TODO Auto-generated method stub
+
 	}
 
 }
