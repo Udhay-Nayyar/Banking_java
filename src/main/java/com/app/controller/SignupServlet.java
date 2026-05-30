@@ -33,6 +33,17 @@ public class SignupServlet extends HttpServlet {
 		String password = request.getParameter("password");
 		Double balance = Double.parseDouble(request.getParameter("balance"));
 
+		String regex = "^[A-Za-z0-9._%+-]+@gmail\\.com$";
+
+		if (!email.matches(regex)) {
+
+			request.setAttribute("error", "Please enter a valid email address");
+
+			request.getRequestDispatcher("/signup.jsp").forward(request, response);
+
+			return;
+		}
+
 		User user = new User();
 		user.setUsername(username);
 		user.setBalance(balance);
