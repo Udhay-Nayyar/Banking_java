@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 import com.app.dao.UserDAO;
 import com.app.model.User;
 import com.app.util.DBConnection;
+import com.app.util.EmailUtil;
 
 @WebServlet("/transfer")
 public class TransferServlet extends HttpServlet {
@@ -99,17 +100,40 @@ public class TransferServlet extends HttpServlet {
 			PreparedStatement senderUpdate = con.prepareStatement(senderQuery);
 			PreparedStatement receiverUpdate = con.prepareStatement(receiverQuery);
 
-			senderUpdate.setDouble(1, sender.getBalance() - amount);
+			Double senderBalanceAfterTransfer = sender.getBalance() - amount;
+			Double receiverBalanceAfterTransfer = receiver.getBalance() + amount;
+			senderUpdate.setDouble(1, senderBalanceAfterTransfer);
 			senderUpdate.setInt(2, sender.getId());
 
-			receiverUpdate.setDouble(1, receiver.getBalance() + amount);
+			receiverUpdate.setDouble(1, receiverBalanceAfterTransfer);
 			receiverUpdate.setInt(2, receiver.getId());
 
 			Integer sResult = senderUpdate.executeUpdate();
 //			throw new SQLException("Testing rollback");
 			Integer rResult = receiverUpdate.executeUpdate();
 
+			
+			
+
 			con.commit();
+			new Thread(() -> {
+				EmailUtil.sendEmail(sender.getEmail(), "Transfer Successful",
+						"Hello " + sender.getUsername() + ",\n\n"
+								+ "Your fund transfer has been completed successfully.\n\n" + "Amount Transferred: ₹"
+								+ amount + "\n" + "Recipient Account: " + receiver.getAccount_number() + "\n"
+								+ "Available Balance: ₹" + senderBalanceAfterTransfer + "\n\n"
+								+ "Thank you for banking with SecureBank.\n\n" + "Regards,\n" + "SecureBank Team");			   
+			}).start();
+			
+			
+			
+			new Thread(() -> {
+				EmailUtil.sendEmail(receiver.getEmail(), "Money Received",
+						"Hello " + receiver.getUsername() + ",\n\n"
+								+ "You have received funds in your SecureBank account.\n\n" + "Amount Received: ₹" + amount
+								+ "\n" + "Updated Balance: ₹" + receiverBalanceAfterTransfer + "\n\n"
+								+ "Thank you for banking with SecureBank.\n\n" + "Regards,\n" + "SecureBank Team");			   
+			}).start();
 
 			// add the transaction data to the table (transaction)
 			userDAO.addTransaction(sender, amount, true, con);
@@ -124,23 +148,19 @@ public class TransferServlet extends HttpServlet {
 			response.sendRedirect("./dashboard");
 		} catch (SQLException e) {
 
-		    try {
-		        con.rollback();
-		    } catch (SQLException e1) {
-		        e1.printStackTrace();
-		    }
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 
 //		    HttpSession session = request.getSession(false);
 
-		    session.setAttribute(
-		        "error",
-		        "Transfer failed. Please try again."
-		    );
+			session.setAttribute("error", "Transfer failed. Please try again.");
 
-		    response.sendRedirect("./transfer");
-		}
-
+			response.sendRedirect("./transfer");
 		}
 
 	}
 
+}

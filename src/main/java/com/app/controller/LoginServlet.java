@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import com.app.dao.UserDAO;
 import com.app.model.User;
-
+import com.app.util.EmailUtil;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -39,6 +39,15 @@ public class LoginServlet extends HttpServlet {
 		if (result != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("userId", result.getId());
+
+			new Thread(() -> {
+				EmailUtil.sendEmail(result.getEmail(), "Login Alert",
+						"Hello " + result.getUsername() + ",\n\n"
+								+ "A successful login was detected on your SecureBank account.\n\n"
+								+ "If this login was not performed by you, please change your password immediately.\n\n"
+								+ "Regards,\n" + "SecureBank Team");
+			}).start();
+
 			response.sendRedirect("./landingpage.jsp");
 		} else {
 			PrintWriter out = response.getWriter();

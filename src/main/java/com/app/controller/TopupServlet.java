@@ -13,21 +13,25 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.app.dao.UserDAO;
+import com.app.model.User;
+import com.app.util.EmailUtil;
 
 @WebServlet("/topup")
 public class TopupServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-    public TopupServlet() {
-      
-    }
+	public TopupServlet() {
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		Double amount = Double.parseDouble(request.getParameter("amount"));
 
 		UserDAO userDAO = new UserDAO();
@@ -35,7 +39,16 @@ public class TopupServlet extends HttpServlet {
 		HttpSession session = request.getSession(false);
 		Integer id = (Integer) session.getAttribute("userId");
 
-		userDAO.updateBalance(id, amount , 1);
+		User user = userDAO.getUserById(id);
+		Double updatedBalance = userDAO.updateBalance(id, amount, 1);
+
+		new Thread(() -> {
+			EmailUtil.sendEmail(user.getEmail(), "Money Added Successfully",
+					"Hello " + user.getUsername() + ",\n\n"
+							+ "A top-up transaction has been completed successfully.\n\n" + "Amount Added: ₹" + amount
+							+ "\n" + "Available Balance: ₹" + updatedBalance + "\n\n"
+							+ "Thank you for using SecureBank.\n\n" + "Regards,\n" + "SecureBank Team");
+		}).start();
 
 		response.sendRedirect("./dashboard");
 //		ServletContext sc =  getServletContext();

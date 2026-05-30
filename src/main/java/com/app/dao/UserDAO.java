@@ -138,23 +138,25 @@ public class UserDAO {
 		return user;
 	}
 
-	public void updateBalance(Integer id, Double amount, Integer operation) {
+	public Double updateBalance(Integer id, Double amount, Integer operation) {
 		String query = "UPDATE users  SET balance = ?  WHERE id = ?";
 
 		String transQuery = "INSERT INTO transactions(user_id, transaction_type , amount) VALUES (?,?,?)";
 		Connection con = (new DBConnection()).getConnection();
+		double result = 0;
 		try {
 			PreparedStatement ps = con.prepareStatement(query);
 			User user = getUserById(id);
 			PreparedStatement txps = con.prepareStatement(transQuery);
 
 			txps.setInt(1, id);
-
 			if (operation == 1) {
-				ps.setDouble(1, user.getBalance() + amount);
+				result = user.getBalance() + amount;
+				ps.setDouble(1, result);
 				txps.setString(2, "topup");
 			} else {
-				ps.setDouble(1, user.getBalance() - amount);
+				result = user.getBalance() + amount;
+				ps.setDouble(1,result);
 				txps.setString(2, "withdraw");
 			}
 			ps.setInt(2, id);
@@ -162,7 +164,7 @@ public class UserDAO {
 			txps.setDouble(3, amount);
 
 			int txresult = txps.executeUpdate();
-			int result = ps.executeUpdate();
+			int res = ps.executeUpdate();
 			con.close();
 			ps.close();
 			txps.close();
@@ -171,6 +173,9 @@ public class UserDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		return result;
 
 	}
 
