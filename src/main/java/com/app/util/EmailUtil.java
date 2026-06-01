@@ -20,7 +20,7 @@ public class EmailUtil {
 	 *
 	 * Example: securebank.project@gmail.com
 	 */
-	private static final String FROM_EMAIL = "udhaynayyar80@gmail.com";
+	private static final String FROM_EMAIL = ConfigUtil.getProperty("EMAIL");
 
 	/*
 	 * Gmail App Password
@@ -29,7 +29,7 @@ public class EmailUtil {
 	 *
 	 * Generate from: Google Account → Security → App Passwords
 	 */
-	private static final String APP_PASSWORD = "jdkc uqha exfq iaeg";
+	private static final String APP_PASSWORD = ConfigUtil.getProperty("APP_PASSWORD");
 
 	/*
 	 * Static method because we don't need to create an EmailUtil object.
@@ -40,6 +40,7 @@ public class EmailUtil {
 	 */
 	public static void sendEmail(String to, String subject, String body) {
 
+		System.out.println(FROM_EMAIL);
 		/*
 		 * SMTP configuration
 		 *

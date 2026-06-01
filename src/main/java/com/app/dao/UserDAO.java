@@ -83,6 +83,7 @@ public class UserDAO {
 				user = new User();
 				user.setUsername(rs.getString("username"));
 				user.setPassword(rs.getString("password"));
+				user.setEmail(rs.getString("email"));
 				user.setId(rs.getInt("id"));
 				if (BCrypt.checkpw(password, user.getPassword()) == false)
 					return null;
@@ -96,6 +97,8 @@ public class UserDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		System.out.println(user);
 		return user;
 
 	}

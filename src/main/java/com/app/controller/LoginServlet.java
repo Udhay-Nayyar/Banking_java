@@ -29,7 +29,6 @@ public class LoginServlet extends HttpServlet {
 
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		UserDAO userDAO = new UserDAO();
@@ -39,6 +38,10 @@ public class LoginServlet extends HttpServlet {
 		if (result != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("userId", result.getId());
+			
+			
+			System.out.println("EMAIL = " + result.getEmail());
+			System.out.println("USERNAME = " + result.getUsername());
 
 			new Thread(() -> {
 				EmailUtil.sendEmail(result.getEmail(), "Login Alert",
